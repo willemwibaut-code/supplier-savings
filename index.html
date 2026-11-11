@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Supplier quote calculator</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1c1917;
+      --muted: #57534e;
+      --line: #d6d3d1;
+      --paper: #fafaf9;
+      --card: #ffffff;
+      --accent: #1d4ed8;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--ink);
+      background: var(--paper);
+    }
+
+    main {
+      max-width: 32rem;
+      margin: 0 auto;
+      padding: 3rem 1.25rem 4rem;
+    }
+
+    h1 {
+      margin: 0 0 0.5rem;
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    p.lede {
+      margin: 0 0 1.75rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    form {
+      display: grid;
+      gap: 1rem;
+      padding: 1.25rem;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+
+    label {
+      display: grid;
+      gap: 0.35rem;
+      font-size: 0.95rem;
+    }
+
+    input {
+      font: inherit;
+      font-size: 1.05rem;
+      padding: 0.55rem 0.7rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    input:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: 1px;
+    }
+
+    button {
+      font: inherit;
+      font-size: 1rem;
+      margin-top: 0.25rem;
+      padding: 0.65rem 1rem;
+      border: 0;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #fff;
+      cursor: pointer;
+    }
+
+    button:hover { background: #1e40af; }
+
+    #result {
+      margin-top: 1.25rem;
+      min-height: 5.5rem;
+    }
+
+    #result p {
+      margin: 0.35rem 0;
+      font-variant-numeric: tabular-nums;
+    }
+
+    #result .error {
+      color: #9f1239;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Supplier quote calculator</h1>
+    <p class="lede">Compare two unit prices across a year’s volume.</p>
+    <form id="quote">
+      <label>
+        Current price per unit (€)
+        <input id="current-price" name="current-price" value="4.80" inputmode="decimal" autocomplete="off">
+      </label>
+      <label>
+        New price per unit (€)
+        <input id="new-price" name="new-price" value="4.50" inputmode="decimal" autocomplete="off">
+      </label>
+      <label>
+        Annual volume
+        <input id="annual-volume" name="annual-volume" value="20000" inputmode="numeric" autocomplete="off">
+      </label>
+      <button type="submit">Calculate</button>
+    </form>
+    <div id="result" aria-live="polite"></div>
+  </main>
+  <script>
+    function calculateAnnualSavings(currentPrice, newPrice, annualVolume) {
+      return (currentPrice - newPrice) * annualVolume;
+    }
+
+    function parsePrice(raw) {
+      if (typeof raw !== "string" || raw.trim() === "") return null;
+      const value = Number(raw);
+      if (!Number.isFinite(value) || value < 0) return null;
+      return value;
+    }
+
+    function parseVolume(raw) {
+      if (typeof raw !== "string" || raw.trim() === "") return null;
+      const value = Number(raw);
+      if (!Number.isInteger(value) || value <= 0) return null;
+      return value;
+    }
+
+    function euros(amount) {
+      return `€${amount.toFixed(2)}`;
+    }
+
+    const form = document.getElementById("quote");
+    const result = document.getElementById("result");
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const currentPrice = parsePrice(document.getElementById("current-price").value);
+      const newPrice = parsePrice(document.getElementById("new-price").value);
+      const annualVolume = parseVolume(document.getElementById("annual-volume").value);
+
+      if (currentPrice === null || newPrice === null || annualVolume === null) {
+        result.innerHTML = "<p class=\"error\">Enter a zero or positive price for each supplier and a positive whole-number volume.</p>";
+        return;
+      }
+
+      const currentAnnualCost = currentPrice * annualVolume;
+      const newAnnualCost = newPrice * annualVolume;
+      const annualSavings = calculateAnnualSavings(currentPrice, newPrice, annualVolume);
+
+      result.innerHTML = [
+        `<p>Current annual cost: ${euros(currentAnnualCost)}</p>`,
+        `<p>New annual cost: ${euros(newAnnualCost)}</p>`,
+        `<p>Annual savings: ${euros(annualSavings)}</p>`
+      ].join("");
+    });
+  </script>
+</body>
+</html>
