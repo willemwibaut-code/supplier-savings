@@ -7,98 +7,140 @@
   <style>
     :root {
       color-scheme: light;
-      --ink: #1c1917;
-      --muted: #57534e;
-      --line: #d6d3d1;
-      --paper: #fafaf9;
-      --card: #ffffff;
-      --accent: #1d4ed8;
+      --ink: #1d1d1f;
+      --muted: #65656b;
+      --line: #dcdce0;
+      --paper: #f5f5f7;
+      --accent: #0071e3;
     }
 
     * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      min-height: 100vh;
-      font-family: Georgia, "Times New Roman", serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--ink);
       background: var(--paper);
+      -webkit-font-smoothing: antialiased;
     }
 
     main {
-      max-width: 32rem;
+      max-width: 1100px;
       margin: 0 auto;
-      padding: 3rem 1.25rem 4rem;
+      padding: 72px 32px;
     }
 
     h1 {
-      margin: 0 0 0.5rem;
-      font-size: 1.75rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
+      margin: 0 0 12px;
+      font-size: clamp(30px, 4vw, 44px);
+      line-height: 1.12;
+      font-weight: 650;
+      letter-spacing: -0.045em;
     }
 
-    p.lede {
-      margin: 0 0 1.75rem;
+    .lede {
+      margin: 0 0 36px;
       color: var(--muted);
-      line-height: 1.45;
+      font-size: 18px;
+      line-height: 1.5;
     }
 
-    form {
+    .calculator {
       display: grid;
-      gap: 1rem;
-      padding: 1.25rem;
-      background: var(--card);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+      background: #fff;
       border: 1px solid var(--line);
-      border-radius: 12px;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    form, .results { min-width: 0; padding: 32px; }
+    form { border-right: 1px solid var(--line); }
+
+    h2 {
+      margin: 0 0 28px;
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.025em;
     }
 
     label {
       display: grid;
-      gap: 0.35rem;
-      font-size: 0.95rem;
+      gap: 9px;
+      margin-bottom: 24px;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
     }
 
     input {
-      font: inherit;
-      font-size: 1.05rem;
-      padding: 0.55rem 0.7rem;
-      border: 1px solid var(--line);
-      border-radius: 8px;
+      width: 100%;
+      min-width: 0;
+      min-height: 50px;
+      padding: 12px 14px;
+      border: 1px solid #bcbcc2;
+      border-radius: 10px;
       background: #fff;
-    }
-
-    input:focus {
-      outline: 2px solid var(--accent);
-      outline-offset: 1px;
-    }
-
-    button {
+      color: var(--ink);
       font: inherit;
-      font-size: 1rem;
-      margin-top: 0.25rem;
-      padding: 0.65rem 1rem;
-      border: 0;
-      border-radius: 8px;
-      background: var(--accent);
-      color: #fff;
-      cursor: pointer;
-    }
-
-    button:hover { background: #1e40af; }
-
-    #result {
-      margin-top: 1.25rem;
-      min-height: 5.5rem;
-    }
-
-    #result p {
-      margin: 0.35rem 0;
+      font-size: 18px;
       font-variant-numeric: tabular-nums;
     }
 
-    #result .error {
-      color: #9f1239;
+    input:focus-visible, button:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    button {
+      width: 100%;
+      min-height: 50px;
+      margin-top: 4px;
+      padding: 13px 16px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #fff;
+      font: inherit;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    button:hover { background: #0066cc; }
+    button:active { background: #005bb5; }
+
+    .result-label { display: block; color: var(--muted); font-size: 14px; line-height: 1.5; }
+    .amount {
+      display: block;
+      margin-top: 6px;
+      font-size: clamp(24px, 2.7vw, 32px);
+      font-weight: 600;
+      letter-spacing: -0.04em;
+      line-height: 1.2;
+      font-variant-numeric: tabular-nums;
+      overflow-wrap: anywhere;
+    }
+    .primary .result-label { color: var(--ink); font-size: 16px; font-weight: 500; }
+    .primary .amount { font-size: clamp(36px, 4.2vw, 50px); }
+    .result-item { margin: 0 0 24px; }
+    .costs { display: grid; gap: 20px; border-top: 1px solid var(--line); padding-top: 24px; }
+    .costs .result-item { margin: 0; }
+    .costs .amount { font-size: 24px; }
+    .note { margin: 12px 0 26px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .error { margin: 0; line-height: 1.6; font-weight: 500; }
+
+    @media (max-width: 700px) {
+      main { padding: 36px 16px; }
+      .lede { font-size: 16px; margin-bottom: 28px; }
+      .calculator { grid-template-columns: minmax(0, 1fr); border-radius: 16px; }
+      form, .results { padding: 24px; }
+      form { border-right: 0; border-bottom: 1px solid var(--line); }
+      h2 { margin-bottom: 24px; }
+    }
+
+    @media (max-width: 350px) {
+      form, .results { padding: 20px; }
     }
   </style>
 </head>
@@ -106,22 +148,30 @@
   <main>
     <h1>Supplier quote calculator</h1>
     <p class="lede">Compare two unit prices across a year’s volume.</p>
-    <form id="quote">
-      <label>
-        Current price per unit (€)
-        <input id="current-price" name="current-price" value="4.80" inputmode="decimal" autocomplete="off">
-      </label>
-      <label>
-        New price per unit (€)
-        <input id="new-price" name="new-price" value="4.50" inputmode="decimal" autocomplete="off">
-      </label>
-      <label>
-        Annual volume
-        <input id="annual-volume" name="annual-volume" value="20000" inputmode="numeric" autocomplete="off">
-      </label>
-      <button type="submit">Calculate</button>
-    </form>
-    <div id="result" aria-live="polite"></div>
+    <div class="calculator">
+      <form id="quote">
+        <h2>Your supplier quotes</h2>
+        <label>
+          Current price per unit (€)
+          <input id="current-price" name="current-price" value="4.80" inputmode="decimal" autocomplete="off">
+        </label>
+        <label>
+          New price per unit (€)
+          <input id="new-price" name="new-price" value="4.50" inputmode="decimal" autocomplete="off">
+        </label>
+        <label>
+          Annual volume
+          <input id="annual-volume" name="annual-volume" value="20000" inputmode="numeric" autocomplete="off">
+        </label>
+        <button type="submit">Calculate</button>
+      </form>
+      <section class="results" aria-labelledby="results-heading">
+        <h2 id="results-heading">Your savings</h2>
+        <div id="result" aria-live="polite" aria-atomic="true">
+          <p class="note">Enter your supplier quotes and calculate to see your savings.</p>
+        </div>
+      </section>
+    </div>
   </main>
   <script>
     function calculateAnnualSavings(currentPrice, newPrice, annualVolume) {
@@ -166,9 +216,13 @@
       const annualSavings = calculateAnnualSavings(currentPrice, newPrice, annualVolume);
 
       result.innerHTML = [
-        `<p>Current annual cost: ${euros(currentAnnualCost)}</p>`,
-        `<p>New annual cost: ${euros(newAnnualCost)}</p>`,
-        `<p>Annual savings: ${euros(annualSavings)}</p>`
+        `<p class="result-item primary"><span class="result-label">First-year net savings</span><strong class="amount">${euros(annualSavings)}</strong></p>`,
+        `<p class="note">Equal to annual savings. Fees are excluded from this calculator.</p>`,
+        `<p class="result-item"><span class="result-label">Annual savings</span><strong class="amount">${euros(annualSavings)}</strong></p>`,
+        `<div class="costs">`,
+        `<p class="result-item"><span class="result-label">Current annual cost</span><strong class="amount">${euros(currentAnnualCost)}</strong></p>`,
+        `<p class="result-item"><span class="result-label">New annual cost</span><strong class="amount">${euros(newAnnualCost)}</strong></p>`,
+        `</div>`
       ].join("");
     });
   </script>
